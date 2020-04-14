@@ -8,7 +8,7 @@ $page_title = "Login";
 // include login checker
 $require_login=false;
 include_once "login_checker.php";
-
+$count = 0;
 // default to false
 $access_denied=false;
  
@@ -26,11 +26,11 @@ if($_POST){
 	$user = new User($db);
  
 	// check if email and password are in the database
-	$user->username=$_POST['username'];
- 
+	$user->email=$_POST['email'];
+ 	$user->username=$_POST['username'];
 	// check if email exists, also get user details using this emailExists() method
-	$username_exists = $user->usernameExists();
- 
+	$email_exists = $user->emailExists();
+ 	$username_exists = $user->usernameExists();
 	// validate login
 	if ($username_exists && password_verify($_POST['password'], $user->password) && $user->status==1){
  
@@ -40,7 +40,7 @@ if($_POST){
     		$_SESSION['access_level'] = $user->access_level;
     		$_SESSION['firstname'] = htmlspecialchars($user->firstname, ENT_QUOTES, 'UTF-8') ;
     		$_SESSION['lastname'] = $user->lastname;
- 
+ 		$_SESSION['username'] = $user->username;
     		// if access level is 'Admin', redirect to admin section
     		if($user->access_level=='Admin'){
       			 header("Location: {$home_url}admin/index.php?action=login_success");
@@ -49,7 +49,8 @@ if($_POST){
   		// else, redirect only to 'Customer' section
     		else{
         		header("Location: {$home_url}index.php?action=login_success");
-    		}
+    			$count++;
+		}
 	}
  
 	// if username does not exist or password is wrong

@@ -1,12 +1,10 @@
 <?php
 // core configuration
-include_once "config/core.php";
- 
+include_once "config/core.php"; 
 // set page title
 $page_title="Main Page";
 // login count
-$count = 0;
- 
+$login_attempts = 0;
 $inTwoMonths =60*60*60*24+time();
 setcookie('lastVisit', date("G:i - m/d/y"), $inTwoMonths);
 // include login checker
@@ -23,12 +21,12 @@ echo "<div class='col-md-12'>";
  
     // if login was successful
     if($action=='login_success') {
-// && isset($_COOKIE['lastVisit'])){
-	$count++;
+	++$login_attempts;
+	// && isset($_COOKIE['lastVisit'])){
         echo "<div class='alert alert-info'>";
             echo "<strong>Hi " . $_SESSION['firstname'] . " " . $_SESSION['lastname'].  ", welcome back!</strong>";
 	    echo "<strong> Last login date: " . $_COOKIE['lastVisit'] . ".</strong>";
-	    echo"<strong> You have logged in: ". $count. " times.</strong>";
+	    echo"<strong> You have logged in: ". $login_attempts . " times.</strong>";
 	 echo "</div>";
     }
  
