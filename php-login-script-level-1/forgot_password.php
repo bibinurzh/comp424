@@ -25,7 +25,6 @@ $utils = new Utils();
 include_once "layout_head.php";
  
 // post code will be here
-
 //show reset password HTML form
 echo "<div class='col-md-4'></div>";
 echo "<div class='col-md-4'>";    
@@ -34,11 +33,19 @@ echo "<div class='account-wall'>
         <div id='my-tab-content' class='tab-content'>
             <div class='tab-pane active' id='login'>
 		<div align='center'>
-                <img class='profile-img' src='images/login-icon.png'>
-                <form class='form-signin' action='" . htmlspecialchars($_SERVER["PHP_SELF"]) . "' method='post'>
-                    <input type='email' name='email' class='form-control' placeholder='Your email' required autofocus>
-                    <input type='submit' class='btn btn-lg btn-primary btn-block' value='Send Reset Link' style='margin-top:1em;' />
-                </form>
+		    <form>
+        <div class='outerbox_forgot_username'>
+           
+                <div class = 'method_div'>
+         
+               <button type='button'><a href='method_email'>Reset By Email</a></button>
+		<p></p> 
+		<p><button type='button'><a href='method_security'>Answer Security Questions</a></button> 
+</p>
+        </div>
+    </form>
+
+            </div>
 		</div>
             </div>
         </div>

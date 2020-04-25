@@ -60,43 +60,40 @@ $user->success=0;
 $access_code=$utils->getToken();
 $user->access_code=$access_code;
 //check password requirements
-if($_POST['password']==$_POST['confirmpassword']){
-	if(strlen($_POST['password'])<8) {
-        	$error .= "Password too short.";
-        }
-	if(!preg_match("#[0-9]+#", $_POST['password'])) {
-                $error .= "Password must have at least one number.";
-	}
-        if(!preg_match("#[a-zA-Z]+#", $_POST['password'])) {
-        	$error .- "Password must have at least one upper case.";
-        }
-        if($error) {
-        	echo "<div class='alert alert-danger'>Password validation failure (your choise is weak): $error</div>";
-        }
+if($_POST['password']==$_POST['confirmpasswif(strlen($_POST['password'])<8) {
+                        $error .= "Password too short.";
+                }
+                if(!preg_match("#[0-9]+#", $_POST['password'])) {
+                        $error .= "Password must have at least one number.";
+                }
+                if(!preg_match("#[a-zA-Z]+#", $_POST['password'])) {
+                        $error .- "Password must have at least one upper case.";
+                }
+                        if($error) {
+                                echo "<div class='alert alert-danger'>Password validation failure (your choise is weak): $error</div>";
+                        }
 	else {
-		//create the user
-		if($user->create()){
-			// send confimation email
-   			$send_to_email=$_POST['email'];
-    			$body="Hi {$send_to_email}.<br /><br />";
-    			$body.="Please click the following link to verify your email and login: {$home_url}verify/?access_code={$access_code}";
-    			$subject="Verification Email";
-    			if($utils->sendEmailViaPhpMail($send_to_email, $subject, $body)){
-        			echo "<div class='alert alert-success'>
-            			Verification link was sent to your email. Click that link to login.
-        			</div>";
-    			}
-			else{
-        			echo "<div class='alert alert-danger'>
-            			User was created but unable to send verification email. Please contact admin.
-        			</div>";
-    			}
-			//empty posted values
-			$_POST=array();
-		}
-		else{
-			echo "<div class='alert alert-danger' role='alert'>Unable to register. Please try again.</div>";
-		}
+	//create the user
+	if($user->create()){
+		// send confimation email
+   		$send_to_email=$_POST['email'];
+    		$body="Hi {$send_to_email}.<br /><br />";
+    		$body.="Please click the following link to verify your email and login: {$home_url}verify/?access_code={$access_code}";
+    		$subject="Verification Email";
+    		if($utils->sendEmailViaPhpMail($send_to_email, $subject, $body)){
+        		echo "<div class='alert alert-success'>
+            		Verification link was sent to your email. Click that link to login.
+        		</div>";
+    		}else{
+        		echo "<div class='alert alert-danger'>
+            		User was created but unable to send verification email. Please contact admin.
+        		</div>";
+    		}
+	//empty posted values
+	$_POST=array();
+	}else{
+		echo "<div class='alert alert-danger' role='alert'>Unable to register. Please try again.</div>";
+	}
 	}
 }
 else {

@@ -20,8 +20,15 @@ class User{
    	public $status;
     	public $created;
     	public $modified;
- 	public $sec_q;
-	public $sec_a;
+ 	public $sec_q1;
+	public $sec_a1;
+	public $sec_q2;
+	public $sec_a2;
+	public $sec_q3;
+	public $sec_a3;
+	public $fail;
+	public $login_count;
+	public $success;
     	// constructor
     	public function __construct($db){
         	$this->conn = $db;
@@ -30,7 +37,7 @@ class User{
     	function emailExists(){
  
     		// query to check if email exists
-    		$query = "SELECT id, firstname, lastname, access_level, password, status, username
+    		$query = "SELECT id, firstname, lastname, access_level, password, status, username, sec_q1, sec_q2, sec_q3, sec_a1, sec_a2, sec_a3, access_code
             		FROM " . $this->table_name . "
             		WHERE email = ?
             		LIMIT 0,1";
@@ -64,7 +71,15 @@ class User{
         		$this->access_level = $row['access_level'];
         		$this->password = $row['password'];
         		$this->status = $row['status'];
- 
+			$this->sec_q1=$row['sec_q1'];
+			$this->sec_q2=$row['sec_q2'];
+			$this->sec_q3=$row['sec_q3'];
+			$this->sec_a1=$row['sec_a1'];
+			$this->sec_a2=$row['sec_a2'];
+			$this->sec_a3=$row['sec_a3'];
+			$this->access_code=$row['access_code'];
+
+
         		// return true because email exists in the database
         		return true;
     		}
@@ -92,9 +107,15 @@ class User{
 		access_code = :access_code,
         	status = :status,
         	created = :created,
-		sec_q = :sec_q,
-		sec_a = :sec_a";
- 
+		sec_q1 = :sec_q1,
+		sec_a1 = :sec_a1,
+		sec_q2 = :sec_q2,
+		sec_a2 = :sec_a2,
+		sec_q3 = :sec_q3,
+		sec_a3 = :sec_a3,
+		fail = :fail,
+		login_count = :login_count,
+		success = :success";
     		// prepare the query
     		$stmt = $this->conn->prepare($query);
  
@@ -109,8 +130,15 @@ class User{
     		$this->access_level=htmlspecialchars(strip_tags($this->access_level));
 		$this->access_code=htmlspecialchars(strip_tags($this->access_code));
     		$this->status=htmlspecialchars(strip_tags($this->status));
-    		$this->sec_q=htmlspecialchars(strip_tags($this->sec_q));
-		$this->sec_a=htmlspecialchars(strip_tags($this->sec_a));
+    		$this->sec_q1=htmlspecialchars(strip_tags($this->sec_q1));
+		$this->sec_a1=htmlspecialchars(strip_tags($this->sec_a1));
+		$this->sec_q2=htmlspecialchars(strip_tags($this->sec_q2));
+                $this->sec_a2=htmlspecialchars(strip_tags($this->sec_a2));
+		$this->sec_q3=htmlspecialchars(strip_tags($this->sec_q3));
+                $this->sec_a3=htmlspecialchars(strip_tags($this->sec_a3));
+		$this->fail=htmlspecialchars(strip_tags($this->fail));
+		$this->login_count=htmlspecialchars(strip_tags($this->login_count));
+		$this->success=htmlspecialchars(strip_tags($this->success));
 		// bind the values
     		$stmt->bindParam(':firstname', $this->firstname);
     		$stmt->bindParam(':lastname', $this->lastname);
@@ -118,9 +146,18 @@ class User{
     		$stmt->bindParam(':username', $this->username);
     		$stmt->bindParam(':contact_number', $this->contact_number);
     		$stmt->bindParam(':birthday', $this->birthday);
-		$stmt->bindParam(':sec_q', $this->sec_q);
-		$ans_hash = password_hash($this->sec_a, PASSWORD_BCRYPT);
-    		$stmt->bindParam(':sec_a', $ans_hash);
+		$stmt->bindParam(':sec_q1', $this->sec_q1);
+		$ans_hash = password_hash($this->sec_a1, PASSWORD_BCRYPT);
+    		$stmt->bindParam(':sec_a1', $ans_hash);
+		$stmt->bindParam(':sec_q2', $this->sec_q2);
+                $ans_has = password_hash($this->sec_a2, PASSWORD_BCRYPT);
+                $stmt->bindParam(':sec_a2', $ans_has);
+		$stmt->bindParam(':sec_q3', $this->sec_q3);
+                $ans_h = password_hash($this->sec_a3, PASSWORD_BCRYPT);
+                $stmt->bindParam(':sec_a3', $ans_h);
+		$stmt->bindParam(':fail', $this->fail);
+		$stmt->bindParam(':login_count', $this->login_count);
+		$stmt->bindParam(':success', $this->success);
 		// hash the password before saving to database
     		$password_hash = password_hash($this->password, PASSWORD_BCRYPT);
     		$stmt->bindParam(':password', $password_hash);
@@ -178,6 +215,35 @@ class User{
     		return false;
  
 	}
+// used in forgot password feature
+function updateAccessCode(){
+ 
+    // update query
+    $query = "UPDATE
+                " . $this->table_name . "
+            SET
+                access_code = :access_code
+            WHERE
+                email = :email";
+ 
+    // prepare the query
+    $stmt = $this->conn->prepare($query);
+ 
+    // sanitize
+    $this->access_code=htmlspecialchars(strip_tags($this->access_code));
+    $this->email=htmlspecialchars(strip_tags($this->email));
+ 
+    // bind the values from the form
+    $stmt->bindParam(':access_code', $this->access_code);
+    $stmt->bindParam(':email', $this->email);
+ 
+    // execute the query
+    if($stmt->execute()){
+        return true;
+    }
+ 
+    return false;
+}
 	// used in email verification feature
 	function updateStatusByAccessCode(){
  
@@ -241,7 +307,6 @@ function usernameExists(){
         $this->access_level = $row['access_level'];
         $this->password = $row['password'];
         $this->status = $row['status'];
- 
         // return true because email exists in the database
         return true;
     }
@@ -249,4 +314,118 @@ function usernameExists(){
     // return false if email does not exist in the database
     return false;
 }
+// used in forgot password feature
+
+function updatePassword(){
+
+ 
+
+    // update query
+
+    $query = "UPDATE " . $this->table_name . "
+
+            SET password = :password
+
+            WHERE access_code = :access_code";
+
+ 
+
+    // prepare the query
+
+    $stmt = $this->conn->prepare($query);
+
+ 
+
+    // sanitize
+
+    $this->password=htmlspecialchars(strip_tags($this->password));
+
+    $this->access_code=htmlspecialchars(strip_tags($this->access_code));
+
+ 
+
+    // bind the values from the form
+
+    $password_hash = password_hash($this->password, PASSWORD_BCRYPT);
+
+    $stmt->bindParam(':password', $password_hash);
+
+    $stmt->bindParam(':access_code', $this->access_code);
+
+ 
+
+    // execute the query
+
+    if($stmt->execute()){
+
+        return true;
+
+    }
+
+ 
+
+    return false;
+
+}
+
+
+
+function getUsername(){
+    		// query to check if email exists
+
+    		$query = "SELECT id, firstname, lastname, access_level, password, status, username
+
+            		FROM " . $this->table_name . "
+
+            		WHERE email = ?
+
+            		LIMIT 0,1";
+    		// prepare the query
+
+    		$stmt = $this->conn->prepare( $query );
+    		// sanitize
+    		$this->email=htmlspecialchars(strip_tags($this->email));
+    		// bind given email value
+
+    		$stmt->bindParam(1, $this->email);
+
+ 
+
+    		// execute the query
+
+    		$stmt->execute();
+
+ 
+
+    		// get number of rows
+
+    		$num = $stmt->rowCount();
+
+ 
+
+    		// if email exists, get username
+
+    		if($num>0){
+
+ 
+
+        		// get record details / values
+
+        		$row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+ 
+
+        		// return true because email exists in the database
+
+        		return $row['username'];
+
+    		}
+
+ 
+
+    		// return false if email does not exist in the database
+
+    		return false;
+
+	}
 }

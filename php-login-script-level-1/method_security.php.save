@@ -1,0 +1,86 @@
+<?php
+// core configuration
+include_once "config/core.php";
+ 
+// set page title
+$page_title = "Reset Password";
+ 
+// include login checker
+include_once "login_checker.php";
+// include page header HTML
+include_once "layout_head.php";
+$email=$_POST['email'];
+?>
+<html>
+<body>
+	<center>
+	   <form action="" method="POST">
+	   <table class="table table-hover table-responsive table-bordered">
+		<tr>
+		<td>Email</td>
+		<td><input type="text" name="email" placeholder="Enter email"/> <br/></td>
+		</tr>
+	   </table>
+		<input type ="submit" name="search" value="Continue">
+	   </form>
+<?php
+$connection = mysqli_connect("localhost", "root", "04021999a");
+$db=mysqli_select_db($connection, 'php_login_system');
+	if(isset($_POST['search'])) {
+
+		$query="SELECT * FROM users where email='$email' ";
+		$query_run=mysqli_query($connection, $query);
+while($row = mysqli_fetch_array($query_run)) {
+?>
+<form action="" method="POST">
+	<table class="table table-hover table-responsive table-bordered">
+	<tr>
+	<td>
+	<select name ="ques">
+		<option value="<?php echo $row['sec_q1']?>"><?php echo $row['sec_q1']?></option>
+		<option value="<?php echo $row['sec_q2']?>"><?php echo $row['sec_q2']?></option>
+		<option value="<?php echo $row['sec_q3']?>"><?php echo $row['sec_q3']?></option>
+	</select>
+	</td>
+	<td>
+	<input type = "text" name ="answer">
+	</td></tr>
+	</table>
+	<input type ="submit" name="done" value="Check">
+</form>
+<?php
+}
+}
+?>
+<?php
+$connection = mysqli_connect("localhost", "root", "04021999a");
+$db=mysqli_select_db($connection, 'php_login_system');
+        if(isset($_POST['search'])) {
+
+                $query="SELECT * FROM users where email='$email' ";
+                $query_run=mysqli_query($connection, $query);
+while($row = mysqli_fetch_array($query_run)) {
+?>
+<form action="" method="POST">
+        <table class="table table-hover table-responsive table-bordered">
+        <tr>
+        <td>
+        <select name ="ques">
+                <option value="<?php echo $row['sec_q1']?>"><?php echo $row['sec_q1']?></option>
+                <option value="<?php echo $row['sec_q2']?>"><?php echo $row['sec_q2']?></option>
+                <option value="<?php echo $row['sec_q3']?>"><?php echo $row['sec_q3']?></option>
+        </select>
+        </td>
+        <td>
+        <input type = "text" name ="answer">
+        </td></tr>
+        </table>
+        <input type ="submit" name="done" value="Check">
+</form>
+
+</center>
+</body>
+</html>
+<?php
+include_once "layout_foot.php";
+?>

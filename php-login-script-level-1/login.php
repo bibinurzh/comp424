@@ -8,7 +8,6 @@ $page_title = "Login";
 // include login checker
 $require_login=false;
 include_once "login_checker.php";
-$count = 0;
 // default to false
 $access_denied=false;
  
@@ -31,6 +30,10 @@ if($_POST){
 	// check if email exists, also get user details using this emailExists() method
 	$email_exists = $user->emailExists();
  	$username_exists = $user->usernameExists();
+	$stmt = $db->prepare("UPDATE users SET login_count = login_count + 1 WHERE id = :id");
+        $stmt->bindParam(":id", $user->id);
+        $stmt->execute();
+
 	// validate login
 	if ($username_exists && password_verify($_POST['password'], $user->password) && $user->status==1){
  
@@ -41,6 +44,9 @@ if($_POST){
     		$_SESSION['firstname'] = htmlspecialchars($user->firstname, ENT_QUOTES, 'UTF-8') ;
     		$_SESSION['lastname'] = $user->lastname;
  		$_SESSION['username'] = $user->username;
+    		$stmt = $db->prepare("UPDATE users SET success=success+1 WHERE id=:id");
+		$stmt->bindParam(":id", $user->id);
+    		$stmt->execute();
     		// if access level is 'Admin', redirect to admin section
     		if($user->access_level=='Admin'){
       			 header("Location: {$home_url}admin/index.php?action=login_success");
@@ -49,13 +55,17 @@ if($_POST){
   		// else, redirect only to 'Customer' section
     		else{
         		header("Location: {$home_url}index.php?action=login_success");
-    			$count++;
 		}
 	}
  
 	// if username does not exist or password is wrong
 	else{
+
     		$access_denied=true;
+		$stmt = $db->prepare("UPDATE users SET fail = fail+1 WHERE id = :id");
+		$stmt->bindParam(":id", $user->id);
+                $stmt->execute();
+
 	}
 
 }
